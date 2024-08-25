@@ -22,7 +22,6 @@ function FormReg(): JSX.Element {
             username,
             password: pass
         }
-        console.log(tempUser);
         try {
             const resp = await client.post('/user/register',tempUser)
             console.log(resp.status);

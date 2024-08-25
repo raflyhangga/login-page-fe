@@ -1,32 +1,37 @@
-import client from "../../api/client";
+// import client from "../../api/client";
 import { useState,useEffect } from "react";
 import Logout from "./-components/Logout";
 import useAuth from "../../hooks/useAuth";
+import useRefreshToken from "../../hooks/useRefreshToken";
+import { clientPrivate } from "../../api/client";
 
 function Home() {
     const [name,setName] = useState<string>('Your Name');
+    const refresh = useRefreshToken();
     const { auth } = useAuth();
-    const authToken = `Bearer ${auth.accessToken}`;
-
+    
     useEffect(() => {
+        const authToken = `Bearer ${auth.accessToken}`;
+        const controller = new AbortController();
         async function fetchData() {
             try {
-                // console.log(`authToken: ${authToken}`);
-                console.log(auth.accessToken);
-                console.log(authToken);
-                const resp = await client.get('/user/session/profile',{
+                const resp = await clientPrivate.get('/user/session/profile',{
                     headers: {
                         Authorization: authToken
-                    }
+                    },
+                    signal: controller.signal
                 });
-                console.log(resp.data.name);
                 setName(resp?.data?.name);
             } catch (error) {
                 console.log(error);
             }
         }
         fetchData();
-    },[auth.accessToken,authToken])
+
+        return () => {
+            controller.abort()
+        }
+    },[auth.accessToken])
 
     return (
         <div className="flex items-center justify-center">
@@ -37,6 +42,10 @@ function Home() {
                 </div>
                 <div>
                     <Logout />
+                    <button className="py-2 px-3 bg-blue-600 rounded-md text-white hover:invert" onClick={(e) => {
+                        e.preventDefault();
+                        refresh();
+                    }} >Refresh</button>
                 </div>
             </div>
         </div>

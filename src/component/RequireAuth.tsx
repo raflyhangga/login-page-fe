@@ -9,6 +9,9 @@ function RequireAuth({element}:ComponentType) {
     const { auth } = useAuth();
     const location = useLocation();
 
+    console.log("Requiring auth..")
+    console.log(auth);
+
     return (
         auth?.accessToken
             ? element

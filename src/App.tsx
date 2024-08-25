@@ -23,12 +23,11 @@ function Index() {
         username,
         password: pass
     }
-    console.log(tempUser);
     try {
         const resp = await client.post('/user/login',tempUser)
         const accessToken = resp?.data?.accessToken;
-        console.log(accessToken);
-        setAuth({ accessToken });
+        const refreshToken = resp?.data?.refreshToken;
+        setAuth({ accessToken, refreshToken });
         setUsername('');
         setPass('');
         navigate('/home');
